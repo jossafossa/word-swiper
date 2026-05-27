@@ -51,7 +51,11 @@ export const SwipeTyper = ({ options }: SwipeTyperProps) => {
             {wordOf(word.token, word.matches, word.chosenIndex)}
           </button>
         ))}
-        {typer.activeText !== '' && <span className="active-chip">{typer.activeText}</span>}
+        {typer.activeText !== '' && (
+          <span className="active-chip" title={typer.activeText}>
+            {activeMatches[0]?.word ?? typer.activeText}
+          </span>
+        )}
       </div>
 
       {openIndex !== undefined && typer.committed[openIndex] && (

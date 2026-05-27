@@ -88,9 +88,9 @@ h1 {
 
 .active-chip {
   color: #ff9d4f;
-  font-family: monospace;
-  font-size: 1rem;
-  letter-spacing: 0.05em;
+  font-style: italic;
+  border-bottom: 2px dashed #ff9d4f;
+  padding: 0 0.1rem;
 }
 
 .alternatives {
