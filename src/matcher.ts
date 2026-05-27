@@ -176,29 +176,3 @@ export const matchSwipe = (
 
   return matches.sort((first, second) => second.score - first.score).slice(0, limit);
 };
-
-// Async wrapper around the pure matcher. The matching itself is synchronous,
-// but exposing it as a promise lets the UI treat it like a remote lookup —
-// swap the body for a fetch() once matching moves server-side.
-export const matchSwipeAsync = (
-  swipe: string,
-  dictionary: string[],
-  options: MatchOptions,
-  limit = 5,
-  signal?: AbortSignal,
-): Promise<Match[]> =>
-  new Promise((resolve, reject) => {
-    if (signal?.aborted) {
-      reject(new DOMException('Aborted', 'AbortError'));
-      return;
-    }
-
-    // Small artificial delay so the loading state is observable and races are
-    // realistic; drop this when wiring up a real backend.
-    const timer = setTimeout(() => resolve(matchSwipe(swipe, dictionary, options, limit)), 150);
-
-    signal?.addEventListener('abort', () => {
-      clearTimeout(timer);
-      reject(new DOMException('Aborted', 'AbortError'));
-    });
-  });
