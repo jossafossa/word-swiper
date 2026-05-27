@@ -1,5 +1,5 @@
 import { frequencyScore } from './frequency';
-import { cornerScore, detectCorners, pathScore } from './keyboard';
+import { cornerScore, detectCorners, pathPassesNearKey, pathScore } from './keyboard';
 
 export type Match = {
   word: string;
@@ -46,15 +46,37 @@ const isSubsequence = (word: string, swipe: string): boolean => {
   return true;
 };
 
+// Swipe indices each letter of `word` maps to (greedy), or undefined if `word`
+// is not a subsequence of `swipe`.
+const subsequencePositions = (word: string, swipe: string): number[] | undefined => {
+  const positions: number[] = [];
+  let swipeIndex = 0;
+  for (const letter of word) {
+    const found = swipe.indexOf(letter, swipeIndex);
+    if (found === -1) return undefined;
+    positions.push(found);
+    swipeIndex = found + 1;
+  }
+  return positions;
+};
+
 // How many of `word`'s letters must be dropped for it to become a subsequence
-// of `swipe`, or undefined if more than `maxMissed` would be needed.
+// of `swipe`, or undefined if it cannot fit within `maxMissed`. A dropped letter
+// is only forgiven when the swipe path actually glided past that key — so we
+// won't invent a letter (the "o" in forwastes) the finger never went near.
 const missedLetters = (word: string, swipe: string, maxMissed: number): number | undefined => {
   if (isSubsequence(word, swipe)) return 0;
   if (maxMissed < 1) return undefined;
 
   for (let i = 0; i < word.length; i++) {
     const reduced = word.slice(0, i) + word.slice(i + 1);
-    if (isSubsequence(reduced, swipe)) return 1;
+    const positions = subsequencePositions(reduced, swipe);
+    if (!positions) continue;
+
+    // Where the dropped letter would sit: between its neighbours' matches.
+    const from = i > 0 ? positions[i - 1] : 0;
+    const to = i < positions.length ? positions[i] : swipe.length - 1;
+    if (pathPassesNearKey(swipe, word[i], from, to)) return 1;
   }
   return undefined;
 };

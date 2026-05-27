@@ -82,6 +82,28 @@ export const pathScore = (word: string, swipe: string): number => {
   return 1 / (1 + averageDistance);
 };
 
+// Did the finger glide near `key` while travelling between swipe positions
+// `fromIndex` and `toIndex`? Used to justify a skipped key: only forgive a
+// missing letter if the swipe path actually passed over it, rather than
+// inventing a letter the finger never went near.
+export const pathPassesNearKey = (
+  swipe: string,
+  key: string,
+  fromIndex: number,
+  toIndex: number,
+  radius = 1,
+): boolean => {
+  const target = positionByKey.get(key);
+  if (!target) return false;
+
+  const segment = toPath(swipe).slice(fromIndex, toIndex + 1);
+  if (segment.length === 0) return false;
+  if (segment.length === 1) {
+    return Math.hypot(target.x - segment[0].x, target.y - segment[0].y) < radius;
+  }
+  return distanceToPath(target, segment) < radius;
+};
+
 type Vertex = Point & {
   key: string;
 };
