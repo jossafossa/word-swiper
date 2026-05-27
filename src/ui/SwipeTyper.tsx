@@ -1,5 +1,5 @@
 import { useSwipeField } from './useSwipeField';
-import type { MatchOptions } from './matcher';
+import type { MatchOptions } from '../core/matcher';
 
 type SwipeTyperProps = {
   options: MatchOptions;

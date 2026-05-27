@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { SwipeTyper } from './SwipeTyper';
 import { WeightControls } from './WeightControls';
-import { defaultWeights, type MatchOptions, type Weights } from './matcher';
+import { defaultWeights, type MatchOptions, type Weights } from '../core/matcher';
 
 export const App = () => {
   const [weights, setWeights] = useState<Weights>(defaultWeights);

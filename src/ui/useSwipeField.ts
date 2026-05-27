@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { attachSwipeField, type SwipeFieldController, type SwipeWord } from './swipeField';
-import { matchSwipe, type MatchOptions } from './matcher';
-import { dictionary, isKnownWord } from './dictionary';
+import { attachSwipeField, type SwipeFieldController, type SwipeWord } from '../core/swipeField';
+import { matchSwipe, type MatchOptions } from '../core/matcher';
+import { dictionary, isKnownWord } from '../core/dictionary';
 
 export const useSwipeField = (options: MatchOptions) => {
   const fieldRef = useRef<HTMLTextAreaElement>(null);

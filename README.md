@@ -23,7 +23,7 @@ Vanilla Vite + React + TypeScript. The only runtime deps are `react` /
 
 A "swipe" is the string of keys the finger crosses. Decoding it means ranking
 dictionary words by how well each one explains that swipe. The matcher combines
-several signals into one tunable score (see `src/matcher.ts`):
+several signals into one tunable score (see `src/core/matcher.ts`):
 
 | Signal | Weight | What it measures |
 | --- | --- | --- |
@@ -48,7 +48,7 @@ Candidate gating before scoring:
 
 ### Dictionary
 
-`src/words.txt` is the 50 000 most frequent English words (Norvig's Google Web
+`src/core/words.txt` is the 50 000 most frequent English words (Norvig's Google Web
 Trillion Word Corpus, <https://norvig.com/ngrams/count_1w.txt>), in descending
 frequency order. The line index is the frequency rank. Limiting to real, common
 words keeps obscure dictionary entries from polluting results and keeps the
@@ -59,7 +59,7 @@ module); `dictionary.ts` also exposes `isKnownWord`.
 ## The text field
 
 The main UI is a plain `<textarea>` you can type and edit freely (native cursor,
-mid-word edits). `src/swipeField.ts` (`attachSwipeField`) is a framework-agnostic
+mid-word edits). `src/core/swipeField.ts` (`attachSwipeField`) is a framework-agnostic
 controller you can attach to **any** input/textarea:
 
 - A typed/swiped letter run is decoded into the best word on a **separator**
@@ -78,15 +78,19 @@ textarea and feeds it the decoder + current weights.
 
 ```
 src/
-  matcher.ts        Scoring ensemble + candidate gating (depends only on keyboard.ts)
-  keyboard.ts       Key geometry: pathScore, detectCorners, cornerScore, pathPassesNearKey
-  dictionary.ts     Loads words.txt (50k frequency-ranked) + isKnownWord
-  words.txt         The word list (data)
-  swipeField.ts     Reusable, dependency-free controller: swipe-decoding on any text field
-  useSwipeField.ts  React hook around attachSwipeField
-  SwipeTyper.tsx    The textarea + suggestion bar
-  WeightControls.tsx  Sliders for the scoring weights + fuzzy toggle
-  App.tsx           Composition + shared options state
+  core/                 Framework-agnostic swipe-decoding logic (no React)
+    matcher.ts          Scoring ensemble + candidate gating (depends only on keyboard.ts)
+    keyboard.ts         Key geometry: pathScore, detectCorners, cornerScore, pathPassesNearKey
+    dictionary.ts       Loads words.txt (50k frequency-ranked) + isKnownWord
+    words.txt           The word list (data)
+    swipeField.ts       Reusable, dependency-free controller: swipe-decoding on any text field
+  ui/                   The React layer (wires core/ to the DOM)
+    useSwipeField.ts    React hook around attachSwipeField
+    SwipeTyper.tsx      The textarea + suggestion bar
+    WeightControls.tsx  Sliders for the scoring weights + fuzzy toggle
+    App.tsx             Composition + shared options state
+  main.tsx              App entry point
+  style.css             Global styles
 ```
 
 ## Using the pieces standalone

@@ -1,4 +1,4 @@
-import type { Weights } from './matcher';
+import type { Weights } from '../core/matcher';
 
 type WeightControlsProps = {
   weights: Weights;
