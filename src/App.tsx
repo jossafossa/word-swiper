@@ -14,9 +14,9 @@ export const App = () => {
       <h1>Keyboard Swiper</h1>
       <p className="hint">
         Een gewoon tekstveld — typ en bewerk vrij, zet de cursor waar je wilt.
-        Typ een woord snel achter elkaar (of sleep over het toetsenbord) en bij
-        een spatie of korte pauze wordt het naar het beste woord omgezet. Echte
-        woorden blijven staan; klik een suggestie om te vervangen.
+        Typ een woord snel achter elkaar en bij een spatie of korte pauze wordt
+        het naar het beste woord omgezet. Echte woorden blijven staan; klik een
+        suggestie om te vervangen.
       </p>
 
       <SwipeTyper options={options} />

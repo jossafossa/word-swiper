@@ -1,6 +1,4 @@
-import { useRef, useState } from 'react';
 import { useSwipeField } from './useSwipeField';
-import { KeyboardPlot } from './KeyboardPlot';
 import type { MatchOptions } from './matcher';
 
 type SwipeTyperProps = {
@@ -8,37 +6,20 @@ type SwipeTyperProps = {
 };
 
 export const SwipeTyper = ({ options }: SwipeTyperProps) => {
-  const { fieldRef, lastWord, choose, commitSwipe } = useSwipeField(options);
-
-  // The in-progress on-screen swipe, mirrored to a ref so the pointer-end
-  // handler reads the final value without a stale closure.
-  const [activeKeys, setActiveKeys] = useState<string[]>([]);
-  const activeRef = useRef<{ keys: string[]; holds: number[] }>({ keys: [], holds: [] });
-
-  const handleSwipeUpdate = (keys: string[], holds: number[]) => {
-    activeRef.current = { keys, holds };
-    setActiveKeys(keys);
-  };
-
-  const handleSwipeEnd = () => {
-    const { keys, holds } = activeRef.current;
-    if (keys.length > 0) commitSwipe(keys.join(''), holds);
-    activeRef.current = { keys: [], holds: [] };
-    setActiveKeys([]);
-  };
+  const { fieldRef, lastWord, choose } = useSwipeField(options);
 
   return (
     <div className="typer">
       <label className="field-label" htmlFor="swipe-field">
-        Typ snel of veeg over het toetsenbord; spatie of een korte pauze zet het
-        woord vast. Gewone woorden blijven staan.
+        Typ een woord snel achter elkaar; een spatie of korte pauze zet het vast.
+        Gewone woorden blijven staan.
       </label>
       <textarea
         id="swipe-field"
         ref={fieldRef}
         className="swipe-field"
         rows={3}
-        placeholder="Typ of veeg hier…"
+        placeholder="Typ hier…"
         autoFocus
       />
 
@@ -61,13 +42,6 @@ export const SwipeTyper = ({ options }: SwipeTyperProps) => {
           </div>
         </div>
       )}
-
-      <KeyboardPlot
-        swipe={activeKeys.join('')}
-        holds={activeRef.current.holds}
-        onSwipeUpdate={handleSwipeUpdate}
-        onSwipeEnd={handleSwipeEnd}
-      />
     </div>
   );
 };

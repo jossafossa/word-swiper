@@ -27,6 +27,5 @@ export const useSwipeField = (options: MatchOptions) => {
     fieldRef,
     lastWord,
     choose: (index: number) => controllerRef.current?.choose(index),
-    commitSwipe: (raw: string, holds?: number[]) => controllerRef.current?.commitSwipe(raw, holds),
   };
 };

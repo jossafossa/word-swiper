@@ -70,10 +70,6 @@ controller you can attach to **any** input/textarea:
 - The **suggestion bar** for the last word persists until the next word begins,
   always lists the raw text as a fallback, and clicking a suggestion replaces the
   word **in place**.
-- The on-screen keyboard (`KeyboardPlot`) is interactive: drag to swipe, and the
-  decoded word is inserted into the field at the cursor. It also visualises the
-  current swipe path, the detected corners (highlighted keys), and dwell time
-  (key size).
 
 `useSwipeField` is the thin React wrapper that binds the controller to the
 textarea and feeds it the decoder + current weights.
@@ -88,8 +84,7 @@ src/
   words.txt         The word list (data)
   swipeField.ts     Reusable, dependency-free controller: swipe-decoding on any text field
   useSwipeField.ts  React hook around attachSwipeField
-  SwipeTyper.tsx    The textarea + suggestion bar + on-screen keyboard
-  KeyboardPlot.tsx  Interactive/visualising QWERTY keyboard (SVG)
+  SwipeTyper.tsx    The textarea + suggestion bar
   WeightControls.tsx  Sliders for the scoring weights + fuzzy toggle
   App.tsx           Composition + shared options state
 ```
@@ -106,8 +101,8 @@ The modules are layered so each is usable on its own:
   isWord })` adds swipe-decoding to any `<input>`/`<textarea>` with any decoder.
 - `dictionary.ts` — just the data + `isKnownWord`.
 
-The React layer (`useSwipeField`, `SwipeTyper`, `KeyboardPlot`, `WeightControls`,
-`App`) only wires these together; the logic above is framework-agnostic.
+The React layer (`useSwipeField`, `SwipeTyper`, `WeightControls`, `App`) only
+wires these together; the logic above is framework-agnostic.
 
 ## Conventions
 
@@ -120,9 +115,10 @@ not *what*. Match the surrounding style.
 - **Bigram / sentence context**: pick `lazy` vs `lacy` (or `lay`) using the
   neighbouring words. The biggest remaining recognition win, but needs a bigram
   frequency dataset — discuss scope before pulling in another multi-MB data file.
-- Smooth the on-screen-keyboard insertion when the cursor is mid-word (currently
-  inserts exactly at the caret, which can glue onto an adjacent word).
 - Optional: confidence as a 0–100% bar instead of raw scores.
+- An on-screen keyboard you can mouse/touch-swipe was removed for simplicity; it
+  lives in git history if you want to bring it back (it used the same geometry in
+  `keyboard.ts`).
 
 ## Repo
 

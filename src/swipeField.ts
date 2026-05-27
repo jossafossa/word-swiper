@@ -26,7 +26,6 @@ export type SwipeFieldOptions = {
 export type SwipeFieldController = {
   destroy: () => void;
   choose: (index: number) => void;
-  commitSwipe: (raw: string, holds?: number[]) => void;
 };
 
 type Field = HTMLInputElement | HTMLTextAreaElement;
@@ -140,14 +139,6 @@ export const attachSwipeField = (field: Field, options: SwipeFieldOptions): Swip
     field.setSelectionRange(lastWord.end, lastWord.end);
   };
 
-  // Insert and decode a swipe produced elsewhere (e.g. the on-screen keyboard).
-  const commitSwipe = (raw: string, holds?: number[]) => {
-    field.focus();
-    const caret = field.selectionStart ?? field.value.length;
-    replaceRange(caret, caret, raw);
-    commitRun(caret, caret + raw.length, caret + raw.length, true, holds);
-  };
-
   field.addEventListener('input', handleInput);
 
   return {
@@ -156,6 +147,5 @@ export const attachSwipeField = (field: Field, options: SwipeFieldOptions): Swip
       window.clearTimeout(pauseTimer);
     },
     choose,
-    commitSwipe,
   };
 };
