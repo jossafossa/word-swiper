@@ -1,17 +1,21 @@
-import type { Match } from './matcher';
+// A decoded candidate. Kept minimal so this module stays independent of the
+// matcher — any decoder returning objects with a `word` works.
+export type Suggestion = {
+  word: string;
+};
 
 export type SwipeWord = {
   start: number;
   end: number;
   raw: string;
-  matches: Match[];
+  matches: Suggestion[];
   chosenIndex: number;
 };
 
 export type SwipeFieldOptions = {
   // Decode a raw letter run into ranked candidate words. `holds` (per-character
   // dwell, ms) is supplied for on-screen swipes and feeds the timing signal.
-  decode: (raw: string, holds?: number[]) => Match[];
+  decode: (raw: string, holds?: number[]) => Suggestion[];
   // Whether the raw run is itself a real word (then we keep it as typed).
   isWord: (raw: string) => boolean;
   // Called whenever the last committed word changes (for the suggestion bar).
@@ -48,10 +52,10 @@ export const attachSwipeField = (field: Field, options: SwipeFieldOptions): Swip
   const buildMatches = (
     raw: string,
     holds: number[] | undefined,
-  ): { matches: Match[]; chosenIndex: number } => {
+  ): { matches: Suggestion[]; chosenIndex: number } => {
     const lower = raw.toLowerCase();
     const decoded = options.decode(lower, holds).filter((match) => match.word !== lower);
-    const rawMatch: Match = { word: lower, score: 0 };
+    const rawMatch: Suggestion = { word: lower };
     // Keep a genuinely typed word; otherwise the swipe match wins and the raw
     // run stays available as a fallback.
     if (options.isWord(lower)) return { matches: [rawMatch, ...decoded], chosenIndex: 0 };
