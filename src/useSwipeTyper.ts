@@ -76,6 +76,14 @@ export const useSwipeTyper = (options: MatchOptions, pauseMs: number) => {
       return;
     }
 
+    // Space or Enter accepts the current word immediately, like a phone.
+    if (key === ' ' || key === 'enter') {
+      event.preventDefault();
+      window.clearTimeout(pauseTimer.current);
+      commitActive(0);
+      return;
+    }
+
     if (!isLetter(key) || event.repeat || pressedKeys.current.has(key)) return;
 
     pressedKeys.current.set(key, {
