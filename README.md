@@ -52,8 +52,9 @@ Candidate gating before scoring:
 Trillion Word Corpus, <https://norvig.com/ngrams/count_1w.txt>), in descending
 frequency order. The line index is the frequency rank. Limiting to real, common
 words keeps obscure dictionary entries from polluting results and keeps the
-bundle small (~600 KB). `frequency.ts` derives `frequencyScore` and
-`isKnownWord` from it.
+bundle small (~600 KB). Because the list is frequency-ordered, the matcher reads
+a word's frequency straight from its position in the list (no separate frequency
+module); `dictionary.ts` also exposes `isKnownWord`.
 
 ## The text field
 
@@ -81,18 +82,32 @@ textarea and feeds it the decoder + current weights.
 
 ```
 src/
-  matcher.ts        Scoring ensemble + candidate gating (the core algorithm)
+  matcher.ts        Scoring ensemble + candidate gating (depends only on keyboard.ts)
   keyboard.ts       Key geometry: pathScore, detectCorners, cornerScore, pathPassesNearKey
-  frequency.ts      frequencyScore + isKnownWord, from words.txt
-  dictionary.ts     Loads words.txt (50k frequency-ranked)
+  dictionary.ts     Loads words.txt (50k frequency-ranked) + isKnownWord
   words.txt         The word list (data)
-  swipeField.ts     Reusable controller: swipe-decoding on any text field
+  swipeField.ts     Reusable, dependency-free controller: swipe-decoding on any text field
   useSwipeField.ts  React hook around attachSwipeField
   SwipeTyper.tsx    The textarea + suggestion bar + on-screen keyboard
   KeyboardPlot.tsx  Interactive/visualising QWERTY keyboard (SVG)
   WeightControls.tsx  Sliders for the scoring weights + fuzzy toggle
   App.tsx           Composition + shared options state
 ```
+
+## Using the pieces standalone
+
+The modules are layered so each is usable on its own:
+
+- `keyboard.ts` — pure key geometry, no dependencies. Use `pathScore` /
+  `detectCorners` / `cornerScore` anywhere.
+- `matcher.ts` — depends only on `keyboard.ts`. `matchSwipe(swipe, dictionary,
+  options)` is pure; pass any frequency-ordered word list.
+- `swipeField.ts` — zero app imports. `attachSwipeField(element, { decode,
+  isWord })` adds swipe-decoding to any `<input>`/`<textarea>` with any decoder.
+- `dictionary.ts` — just the data + `isKnownWord`.
+
+The React layer (`useSwipeField`, `SwipeTyper`, `KeyboardPlot`, `WeightControls`,
+`App`) only wires these together; the logic above is framework-agnostic.
 
 ## Conventions
 
