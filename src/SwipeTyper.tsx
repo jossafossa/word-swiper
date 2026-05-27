@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSwipeTyper } from './useSwipeTyper';
 import { useSwipeMatch } from './useSwipeMatch';
 import { KeyboardPlot } from './KeyboardPlot';
@@ -21,6 +21,9 @@ export const SwipeTyper = ({ options }: SwipeTyperProps) => {
   const activeMatches = activeMatch.status === 'success' ? activeMatch.matches : [];
 
   const refocus = () => surfaceRef.current?.focus();
+
+  // Focus the surface on load so physical typing works without clicking first.
+  useEffect(refocus, []);
 
   const isEmpty = typer.committed.length === 0 && typer.activeText === '';
 
