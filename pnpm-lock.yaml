@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      an-array-of-english-words:
-        specifier: ^2.0.0
-        version: 2.0.0
       react:
         specifier: ^19.2.6
         version: 19.2.6
@@ -175,10 +172,6 @@ packages:
         optional: true
       babel-plugin-react-compiler:
         optional: true
-
-  an-array-of-english-words@2.0.0:
-    resolution: {integrity: sha512-FXnNvZSOI27kkKXeLSquhaTGP7z198UOQ4txaYO9fCfrjCh+D5SV7G7XqzEH0229+pAi4cjBEZ4WIQYgjKtO7Q==}
-    hasBin: true
 
   csstype@3.2.3:
     resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
@@ -462,8 +455,6 @@ snapshots:
     dependencies:
       '@rolldown/pluginutils': 1.0.1
       vite: 8.0.13
-
-  an-array-of-english-words@2.0.0: {}
 
   csstype@3.2.3: {}
 

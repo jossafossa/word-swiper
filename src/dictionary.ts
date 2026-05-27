@@ -1,5 +1,9 @@
-import words from 'an-array-of-english-words';
+import wordsText from './words.txt?raw';
 
-// ~275k English words. The list is alphabetical, not frequency-ranked, so the
-// matcher's scoring (not this list) decides which candidates surface first.
-export const dictionary = words;
+// The 50k most frequent English words (Norvig's Google Web Trillion Word Corpus
+// counts), in descending frequency order. Limiting to real, common words keeps
+// obscure dictionary entries from polluting the matches.
+export const dictionary = wordsText
+  .split('\n')
+  .map((word) => word.trim())
+  .filter((word) => word.length > 0);

@@ -1,19 +1,13 @@
-import frequencyText from './frequency-list.txt?raw';
+import { dictionary } from './dictionary';
 
-// 10k English words in descending frequency order → word -> rank (0 = most
-// common). Built once at module load.
-const rankByWord = new Map<string, number>(
-  frequencyText
-    .split('\n')
-    .map((line) => line.trim())
-    .filter((word) => word.length > 0)
-    .map((word, index) => [word, index] as const),
-);
+// The dictionary is already in descending frequency order, so a word's index is
+// its frequency rank (0 = most common).
+const rankByWord = new Map<string, number>(dictionary.map((word, index) => [word, index]));
 
 const rankedCount = rankByWord.size;
 
 // 1 for the single most common word, approaching 0 for rarer words, and 0 for
-// words outside the frequency list entirely.
+// words outside the list entirely.
 export const frequencyScore = (word: string): number => {
   const rank = rankByWord.get(word);
   if (rank === undefined) return 0;
