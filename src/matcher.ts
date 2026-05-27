@@ -1,4 +1,3 @@
-import { frequencyScore } from './frequency';
 import { cornerScore, detectCorners, pathPassesNearKey, pathScore } from './keyboard';
 
 export type Match = {
@@ -126,6 +125,7 @@ const scoreMatch = (
   swipe: string,
   corners: string[],
   missed: number,
+  frequency: number,
   options: MatchOptions,
 ): number => {
   const { weights, holds } = options;
@@ -134,11 +134,13 @@ const scoreMatch = (
     cornerScore(word, corners) * weights.corner +
     timingScore(word, swipe, holds) * weights.timing +
     anchorScore(word, swipe) * weights.anchor +
-    frequencyScore(word) * weights.frequency -
+    frequency * weights.frequency -
     missed * weights.missPenalty
   );
 };
 
+// `dictionary` must be ordered most-frequent first: a word's position is taken
+// as its frequency rank, so the matcher needs no separate frequency source.
 export const matchSwipe = (
   swipe: string,
   dictionary: string[],
@@ -156,7 +158,8 @@ export const matchSwipe = (
   const swipeChars = new Set(cleanSwipe);
 
   const matches: Match[] = [];
-  for (const word of dictionary) {
+  for (let rank = 0; rank < dictionary.length; rank++) {
+    const word = dictionary[rank];
     // Match against the collapsed form so doubled letters cost nothing, but
     // score and display the real word.
     const matchKey = collapseRepeats(word);
@@ -171,7 +174,8 @@ export const matchSwipe = (
     const missed = missedLetters(matchKey, cleanSwipe, maxMissed);
     if (missed === undefined) continue;
 
-    matches.push({ word, score: scoreMatch(word, cleanSwipe, corners, missed, options) });
+    const frequency = 1 - rank / dictionary.length;
+    matches.push({ word, score: scoreMatch(word, cleanSwipe, corners, missed, frequency, options) });
   }
 
   return matches.sort((first, second) => second.score - first.score).slice(0, limit);

@@ -7,3 +7,9 @@ export const dictionary = wordsText
   .split('\n')
   .map((word) => word.trim())
   .filter((word) => word.length > 0);
+
+const knownWords = new Set(dictionary);
+
+// Whether the exact word exists in the dictionary — used to keep genuinely
+// typed words instead of "correcting" them to a swipe match.
+export const isKnownWord = (word: string): boolean => knownWords.has(word);
