@@ -62,7 +62,9 @@ mid-word edits). `src/swipeField.ts` (`attachSwipeField`) is a framework-agnosti
 controller you can attach to **any** input/textarea:
 
 - A typed/swiped letter run is decoded into the best word on a **separator**
-  (space/punctuation/newline) or a short **pause**.
+  (space/punctuation/newline) or a short **pause**. The pause commits the letter
+  run **at the cursor**, wherever it is, so editing a word mid-sentence still
+  decodes it and refreshes the suggestions.
 - A run that is itself a real word is **left as typed** (so normal typing works).
 - The **suggestion bar** for the last word persists until the next word begins,
   always lists the raw text as a fallback, and clicking a suggestion replaces the

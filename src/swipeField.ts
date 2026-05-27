@@ -112,12 +112,15 @@ export const attachSwipeField = (field: Field, options: SwipeFieldOptions): Swip
       emit();
     }
 
-    // Auto-commit on a pause, but only while appending at the very end.
+    // Auto-commit the word at the caret after a pause — wherever the caret is,
+    // so editing a word mid-text still decodes and shows suggestions. A trailing
+    // space is only added when appending at the very end.
     window.clearTimeout(pauseTimer);
     pauseTimer = window.setTimeout(() => {
-      if (field.selectionStart === field.value.length) {
-        commitRun(start, field.value.length, field.value.length, true);
-      }
+      const caretNow = field.selectionStart ?? field.value.length;
+      const run = runEndingAt(field.value, caretNow);
+      if (run.raw.length === 0) return;
+      commitRun(run.start, caretNow, caretNow, caretNow === field.value.length);
     }, pauseMs);
   };
 
