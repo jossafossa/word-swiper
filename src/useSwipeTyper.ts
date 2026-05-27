@@ -104,6 +104,18 @@ export const useSwipeTyper = (options: MatchOptions, pauseMs: number) => {
     });
   };
 
+  // Drive the active swipe from the on-screen keyboard (mouse/touch drag).
+  const setActiveSwipe = (keys: string[], holds: number[]) => {
+    pressedKeys.current.clear();
+    setBuffer({ keys, holds });
+    schedulePause();
+  };
+
+  const commitNow = () => {
+    window.clearTimeout(pauseTimer.current);
+    commitActive(0);
+  };
+
   const chooseCommitted = (wordIndex: number, matchIndex: number) =>
     setCommitted((previous) =>
       previous.map((word, index) =>
@@ -130,6 +142,8 @@ export const useSwipeTyper = (options: MatchOptions, pauseMs: number) => {
     activeHolds: active.holds,
     handleKeyDown,
     handleKeyUp,
+    setActiveSwipe,
+    commitNow,
     chooseCommitted,
     chooseActive,
     clearAll,

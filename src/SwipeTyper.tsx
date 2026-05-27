@@ -99,7 +99,12 @@ export const SwipeTyper = ({ options }: SwipeTyperProps) => {
         </div>
       )}
 
-      <KeyboardPlot swipe={typer.activeText} holds={typer.activeHolds} />
+      <KeyboardPlot
+        swipe={typer.activeText}
+        holds={typer.activeHolds}
+        onSwipeUpdate={typer.setActiveSwipe}
+        onSwipeEnd={typer.commitNow}
+      />
 
       <div className="typer-controls">
         <label className="control">

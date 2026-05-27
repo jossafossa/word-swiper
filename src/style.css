@@ -216,6 +216,12 @@ h1 {
   margin: 1.5rem auto 0;
 }
 
+.plot.interactive {
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+}
+
 .plot-key {
   fill: #2b2b2b;
   stroke: #3a3a3a;
