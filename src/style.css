@@ -34,22 +34,6 @@ h1 {
   border-radius: 0.25rem;
 }
 
-.swipe-input {
-  width: 100%;
-  box-sizing: border-box;
-  font-size: 1.1rem;
-  padding: 0.75rem 1rem;
-  border: 1px solid #3a3a3a;
-  border-radius: 0.5rem;
-  background: #2b2b2b;
-  color: inherit;
-}
-
-.swipe-input:focus {
-  outline: none;
-  border-color: #4f8cff;
-}
-
 .swipe-field {
   width: 100%;
   box-sizing: border-box;
@@ -101,17 +85,6 @@ h1 {
   margin-top: 0.75rem;
 }
 
-.typer-controls {
-  display: flex;
-  align-items: flex-end;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.typer-controls .control {
-  flex: 1;
-}
-
 .field-label {
   display: block;
   font-size: 0.75rem;
@@ -119,35 +92,6 @@ h1 {
   letter-spacing: 0.06em;
   color: #888;
   margin: 1rem 0 0.35rem;
-}
-
-.capture-field {
-  width: 100%;
-  box-sizing: border-box;
-  min-height: 3rem;
-  font-size: 1.1rem;
-  padding: 0.75rem 1rem;
-  border: 1px dashed #3a3a3a;
-  border-radius: 0.5rem;
-  background: #232323;
-  word-break: break-all;
-  cursor: text;
-}
-
-.capture-field:focus {
-  outline: none;
-  border-color: #4f8cff;
-  border-style: solid;
-}
-
-.reset {
-  margin-top: 0.5rem;
-  background: none;
-  border: 1px solid #3a3a3a;
-  color: #aaa;
-  border-radius: 0.4rem;
-  padding: 0.3rem 0.7rem;
-  cursor: pointer;
 }
 
 .controls {
@@ -183,27 +127,4 @@ h1 {
   flex-direction: row;
   align-items: center;
   gap: 0.5rem;
-}
-
-.results {
-  margin-top: 1.5rem;
-}
-
-.muted {
-  color: #888;
-}
-
-.matches {
-  margin: 0;
-  padding-left: 1.2rem;
-}
-
-.matches li {
-  padding: 0.25rem 0;
-  font-size: 1.1rem;
-}
-
-.score {
-  color: #888;
-  font-size: 0.85rem;
 }
