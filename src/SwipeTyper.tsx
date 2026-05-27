@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { useSwipeTyper } from './useSwipeTyper';
-import { useSwipeMatch } from './useSwipeMatch';
+import { useRef, useState } from 'react';
+import { useSwipeField } from './useSwipeField';
 import { KeyboardPlot } from './KeyboardPlot';
 import type { MatchOptions } from './matcher';
 
@@ -8,131 +7,67 @@ type SwipeTyperProps = {
   options: MatchOptions;
 };
 
-const wordOf = (token: string, matches: { word: string }[], chosenIndex: number): string =>
-  matches[chosenIndex]?.word ?? `[${token}]`;
-
 export const SwipeTyper = ({ options }: SwipeTyperProps) => {
-  const [pauseMs, setPauseMs] = useState(700);
-  const typer = useSwipeTyper(options, pauseMs);
-  const [openIndex, setOpenIndex] = useState<number | undefined>(undefined);
-  const surfaceRef = useRef<HTMLDivElement>(null);
+  const { fieldRef, lastWord, choose, commitSwipe } = useSwipeField(options);
 
-  const activeMatch = useSwipeMatch(typer.activeText, { ...options, holds: typer.activeHolds });
-  const activeMatches = activeMatch.status === 'success' ? activeMatch.matches : [];
+  // The in-progress on-screen swipe, mirrored to a ref so the pointer-end
+  // handler reads the final value without a stale closure.
+  const [activeKeys, setActiveKeys] = useState<string[]>([]);
+  const activeRef = useRef<{ keys: string[]; holds: number[] }>({ keys: [], holds: [] });
 
-  const refocus = () => surfaceRef.current?.focus();
+  const handleSwipeUpdate = (keys: string[], holds: number[]) => {
+    activeRef.current = { keys, holds };
+    setActiveKeys(keys);
+  };
 
-  // Focus the surface on load so physical typing works without clicking first.
-  useEffect(refocus, []);
-
-  const isEmpty = typer.committed.length === 0 && typer.activeText === '';
+  const handleSwipeEnd = () => {
+    const { keys, holds } = activeRef.current;
+    if (keys.length > 0) commitSwipe(keys.join(''), holds);
+    activeRef.current = { keys: [], holds: [] };
+    setActiveKeys([]);
+  };
 
   return (
     <div className="typer">
-      <label className="field-label">
-        Swipe-typen — veeg, pauzeer ({pauseMs} ms) voor een nieuw woord, klik een
-        woord om een ander te kiezen
+      <label className="field-label" htmlFor="swipe-field">
+        Typ snel of veeg over het toetsenbord; spatie of een korte pauze zet het
+        woord vast. Gewone woorden blijven staan.
       </label>
+      <textarea
+        id="swipe-field"
+        ref={fieldRef}
+        className="swipe-field"
+        rows={3}
+        placeholder="Typ of veeg hier…"
+        autoFocus
+      />
 
-      <div
-        ref={surfaceRef}
-        className="typer-surface"
-        tabIndex={0}
-        role="textbox"
-        aria-label="Swipe typen"
-        onKeyDown={typer.handleKeyDown}
-        onKeyUp={typer.handleKeyUp}
-      >
-        {isEmpty && <span className="muted">Klik hier en begin te swipen…</span>}
-        {typer.committed.map((word, index) => (
-          <button
-            key={`${word.token}-${index}`}
-            type="button"
-            className={openIndex === index ? 'word-chip open' : 'word-chip'}
-            onClick={() => setOpenIndex(openIndex === index ? undefined : index)}
-          >
-            {wordOf(word.token, word.matches, word.chosenIndex)}
-          </button>
-        ))}
-        {typer.activeText !== '' && (
-          <span className="active-chip" title={typer.activeText}>
-            {activeMatches[0]?.word ?? typer.activeText}
-          </span>
-        )}
-      </div>
-
-      {openIndex !== undefined && typer.committed[openIndex] && (
-        <div className="alternatives">
-          {typer.committed[openIndex].matches.map((match, matchIndex) => (
-            <button
-              key={match.word}
-              type="button"
-              className={
-                matchIndex === typer.committed[openIndex]!.chosenIndex
-                  ? 'alt-chip chosen'
-                  : 'alt-chip'
-              }
-              onClick={() => {
-                typer.chooseCommitted(openIndex, matchIndex);
-                setOpenIndex(undefined);
-                refocus();
-              }}
-            >
-              {match.word}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {typer.activeText !== '' && (
+      {lastWord && (
         <div className="suggestions">
-          <span className="field-label">Suggesties (klik = kies en sluit woord af)</span>
+          <span className="field-label">
+            Suggesties voor <code>{lastWord.raw}</code> — klik om te vervangen
+          </span>
           <div className="alternatives">
-            {activeMatches.map((match, index) => (
+            {lastWord.matches.map((match, index) => (
               <button
-                key={match.word}
+                key={`${match.word}-${index}`}
                 type="button"
-                className={index === 0 ? 'alt-chip chosen' : 'alt-chip'}
-                onClick={() => {
-                  typer.chooseActive(index);
-                  refocus();
-                }}
+                className={index === lastWord.chosenIndex ? 'alt-chip chosen' : 'alt-chip'}
+                onClick={() => choose(index)}
               >
                 {match.word}
               </button>
             ))}
-            {activeMatches.length === 0 && <span className="muted">Geen match…</span>}
           </div>
         </div>
       )}
 
       <KeyboardPlot
-        swipe={typer.activeText}
-        holds={typer.activeHolds}
-        onSwipeUpdate={typer.setActiveSwipe}
-        onSwipeEnd={typer.commitNow}
+        swipe={activeKeys.join('')}
+        holds={activeRef.current.holds}
+        onSwipeUpdate={handleSwipeUpdate}
+        onSwipeEnd={handleSwipeEnd}
       />
-
-      <div className="typer-controls">
-        <label className="control">
-          <span className="control-label">
-            Pauze tot nieuw woord <span className="control-value">{pauseMs} ms</span>
-          </span>
-          <input
-            type="range"
-            min={300}
-            max={1500}
-            step={50}
-            value={pauseMs}
-            onChange={(event) => setPauseMs(Number(event.target.value))}
-          />
-        </label>
-        {!isEmpty && (
-          <button type="button" className="reset" onClick={typer.clearAll}>
-            Wis alles
-          </button>
-        )}
-      </div>
     </div>
   );
 };

@@ -13,3 +13,7 @@ export const frequencyScore = (word: string): number => {
   if (rank === undefined) return 0;
   return 1 - rank / rankedCount;
 };
+
+// Whether the exact word exists in the dictionary — used to keep genuinely
+// typed words instead of "correcting" them to a swipe match.
+export const isKnownWord = (word: string): boolean => rankByWord.has(word);

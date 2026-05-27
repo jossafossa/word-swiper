@@ -13,11 +13,10 @@ export const App = () => {
     <div id="app">
       <h1>Keyboard Swiper</h1>
       <p className="hint">
-        Veeg over je toetsen alsof het je telefoon is — sleep met je muis (of
-        vinger) over het toetsenbord hieronder, of typ snel op je echte
-        toetsenbord. Bij loslaten of een korte pauze wordt het beste woord
-        vastgezet; daarna begin je aan het volgende. Klik een woord aan om een
-        andere suggestie te kiezen.
+        Een gewoon tekstveld — typ en bewerk vrij, zet de cursor waar je wilt.
+        Typ een woord snel achter elkaar (of sleep over het toetsenbord) en bij
+        een spatie of korte pauze wordt het naar het beste woord omgezet. Echte
+        woorden blijven staan; klik een suggestie om te vervangen.
       </p>
 
       <SwipeTyper options={options} />
