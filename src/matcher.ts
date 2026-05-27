@@ -46,6 +46,10 @@ const isSubsequence = (word: string, swipe: string): boolean => {
   return true;
 };
 
+// Collapse runs of the same letter ("hello" -> "helo"). A swipe crosses a key
+// once, so doubled letters should not each demand their own swiped key.
+const collapseRepeats = (word: string): string => word.replace(/(.)\1+/g, '$1');
+
 // Swipe indices each letter of `word` maps to (greedy), or undefined if `word`
 // is not a subsequence of `swipe`.
 const subsequencePositions = (word: string, swipe: string): number[] | undefined => {
@@ -153,14 +157,18 @@ export const matchSwipe = (
 
   const matches: Match[] = [];
   for (const word of dictionary) {
+    // Match against the collapsed form so doubled letters cost nothing, but
+    // score and display the real word.
+    const matchKey = collapseRepeats(word);
+
     let absentLetters = 0;
-    for (const letter of word) {
+    for (const letter of matchKey) {
       if (!swipeChars.has(letter)) absentLetters += 1;
       if (absentLetters > maxMissed) break;
     }
     if (absentLetters > maxMissed) continue;
 
-    const missed = missedLetters(word, cleanSwipe, maxMissed);
+    const missed = missedLetters(matchKey, cleanSwipe, maxMissed);
     if (missed === undefined) continue;
 
     matches.push({ word, score: scoreMatch(word, cleanSwipe, corners, missed, options) });
